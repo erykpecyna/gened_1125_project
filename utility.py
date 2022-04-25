@@ -1,8 +1,9 @@
 import torch
-import tqdm
+from tqdm import tqdm
 import wandb
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# device = torch.device("cpu")
 
 def softmax(act_vals, tau = 1.0):
     max_vals = torch.max(act_vals, axis=1, keepdim=True)[0]/tau
@@ -36,8 +37,8 @@ def train_network(memory_sample, model, target_model, optimizer, criterion, disc
     targets = (rewards + (discount * max_next_q)).float()
 
     outputs = model(torch.stack(states).float()).squeeze()
-    actions = torch.stack(actions)
-    outputs = torch.gather(outputs, 1, actions).squeeze()
+    actions = torch.tensor(actions, device=device)
+    outputs = torch.gather(outputs, 1, actions.unsqueeze(1)).squeeze()
 
     # Loss
     loss = criterion(outputs, targets)
@@ -46,7 +47,7 @@ def train_network(memory_sample, model, target_model, optimizer, criterion, disc
     # Update weights
     optimizer.step()
 
-def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "", model_path = "results/model_{}.pth"):
+def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "", model_path = "results/model_{}.pt"):
     wandb.init(project="lunar_lander", entity="caramelcougar")
 
     env = Environment(config)
@@ -54,7 +55,7 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
     config["num_actions"] = env.env.action_space.n
     agent = Agent(config)
 
-    wandb.config(config)
+    wandb.config.update(config)
 
 
     if config["tune"]:
@@ -66,7 +67,7 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
         start_episode = 0
         print("Training model")
     
-    for episode in tqdm(range(start_episode, start_episode + config['num_episodes'])):
+    for episode in tqdm(range(start_episode, start_episode + config['num_episodes']), desc = "Episodes", unit = "ep"):
         # Run an episode
         terminal = False 
         total_reward = 0.0
@@ -93,14 +94,14 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
         wandb.log({
             "Episode" : episode,
             "Reward" : episode_reward,
+            "Steps" : num_steps
         })
 
-        if episode == start_episode + config['num_episodes'] - 1:
+        if episode == start_episode + config['num_episodes'] - 1 or (episode + 1) % 100 == 0:
             torch.save({
                 'episode' : episode,
                 'model_state_dict' : agent.model.state_dict(),
             }, model_path.format((episode + 1)))
-        print("Episode: {}, Reward: {}".format(episode, episode_reward))
 
 
 
