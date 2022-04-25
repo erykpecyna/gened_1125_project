@@ -1,5 +1,5 @@
 from utility import run_experiment
-from Agents import LunarAgent
+from Agents import LunarAgent_UCB
 from Environments import LunarEnvironment
 
 run_config = {
@@ -11,11 +11,11 @@ run_config = {
     "tau"                : 0.01,
     "replay_iterations"  : 5,
     "tune"               : 0,
-    "sampling method"    : "Softmax"
+    "sampling method"    : "My method"
 }
 
 def main():
-    run_experiment(LunarEnvironment, LunarAgent, run_config, model_path="models/lunar_{}.pt")
+    run_experiment(LunarEnvironment, LunarAgent_UCB, run_config, model_path="models/lunar_ucb_{}.pt")
 
 if __name__ == "__main__":
     main()

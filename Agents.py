@@ -122,7 +122,7 @@ class LunarAgent:
     def get_sum_rewards(self):
         return self.sum_rewards
 
-class LunarAgent:
+class LunarAgent_UCB:
     def __init__(self, config):
         self.model = LunarQNetwork_UCB().to(device)
         self.memory = Memory(config["batch_size"], config["memory_size"])
