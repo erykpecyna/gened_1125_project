@@ -37,3 +37,10 @@ class LunarQNetwork_UCB(nn.Module):
         sigma = self.sigma(x)
         ucb = mu + sigma.abs()
         return ucb.argmax(dim=1)
+
+    def eval_actions(self, x):
+        x = self.fcn(x)
+        mu = self.mu(x)
+        sigma = self.sigma(x)
+        ucb = mu
+        return ucb.argmax(dim=1)

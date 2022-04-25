@@ -2,8 +2,8 @@ import torch
 from tqdm import tqdm
 import wandb
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# device = torch.device("cpu")
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 def softmax(act_vals, tau = 1.0):
     max_vals = torch.max(act_vals, axis=1, keepdim=True)[0]/tau
@@ -93,11 +93,12 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
 
         wandb.log({
             "Episode" : episode,
-            "Reward" : episode_reward,
-            "Steps" : num_steps
+            "Reward"  : episode_reward,
+            "Steps"   : num_steps,
+            "Epsilon" : agent.epsilon if "epsilon" in config else 0,
         })
 
-        if episode == start_episode + config['num_episodes'] - 1 or (episode + 1) % 100 == 0:
+        if episode == start_episode + config['num_episodes'] - 1 or ((episode + 1) % 100 == 0 and episode > start_episode):
             torch.save({
                 'episode' : episode,
                 'model_state_dict' : agent.model.state_dict(),
