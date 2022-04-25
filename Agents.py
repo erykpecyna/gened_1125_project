@@ -172,7 +172,7 @@ class LunarAgent_UCB:
 
         # Action replay / train
         if self.memory.size() >= self.config["batch_size"]:
-            target_model = LunarQNetwork().to(device)
+            target_model = LunarQNetwork_UCB().to(device)
             target_model.load_state_dict(self.model.state_dict())
             target_model.eval()
 
@@ -205,7 +205,7 @@ class LunarAgent_UCB:
 
         # Action replay / train
         if self.memory.size() >= self.config["batch_size"]:
-            target_model = LunarQNetwork().to(device)
+            target_model = LunarQNetwork_UCB().to(device)
             target_model.load_state_dict(self.model.state_dict())
             target_model.eval()
 
