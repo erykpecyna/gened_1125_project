@@ -8,7 +8,7 @@ device = torch.device("cpu")
 env = gym.make("LunarLander-v2")
 
 model = LunarQNetwork_UCB()
-checkpoint = torch.load("models/lunar_hybrid_1000.pt")
+checkpoint = torch.load("models/lunar_hybrid_688.pt")
 model.load_state_dict(checkpoint["model_state_dict"])
 
 obs = env.reset()

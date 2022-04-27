@@ -1,3 +1,5 @@
+from collections import deque
+import numpy as np
 import torch
 from tqdm import tqdm
 import wandb
@@ -49,7 +51,6 @@ def train_network(memory_sample, model, target_model, optimizer, criterion, disc
 
 def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "", model_path = "results/model_{}.pt"):
     wandb.init(project="lunar_lander", entity="caramelcougar")
-
     env = Environment(config)
     # Assuming Discrete action space
     config["num_actions"] = env.env.action_space.n
@@ -66,6 +67,8 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
     else:
         start_episode = 0
         print("Training model")
+
+    score_window = deque(maxlen=100)
     
     for episode in tqdm(range(start_episode, start_episode + config['num_episodes']), desc = "Episodes", unit = "ep"):
         # Run an episode
@@ -90,6 +93,7 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
         
         # Get episode reward
         episode_reward = agent.get_sum_rewards()
+        score_window.append(episode_reward)
 
         wandb.log({
             "Episode" : episode,
@@ -98,11 +102,22 @@ def run_experiment(Environment, Agent, config, episode_max_steps = 0, name = "",
             "Epsilon" : agent.epsilon if "epsilon" in config else 0,
         })
 
+        if np.mean(score_window) >= 200.0:
+            torch.save({
+                'episode' : episode,
+                'model_state_dict' : agent.model.state_dict(),
+            }, model_path.format((episode + 1)))
+            print("\n\n Environment solved in {} episodes".format(episode+1))
+            break
+
+
         if episode == start_episode + config['num_episodes'] - 1 or ((episode + 1) % 100 == 0 and episode > start_episode):
             torch.save({
                 'episode' : episode,
                 'model_state_dict' : agent.model.state_dict(),
             }, model_path.format((episode + 1)))
+    
+    wandb.finish()
 
 
 

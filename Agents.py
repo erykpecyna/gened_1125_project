@@ -21,8 +21,6 @@ class LunarAgent:
         self.optimizer = torch.optim.Adam(
             self.model.parameters(),
             lr = config["learning_rate"],
-            betas = [0.99, 0.999],
-            eps = 1e-4,
         )
 
         self.criterion = nn.MSELoss()
@@ -130,8 +128,6 @@ class LunarAgent_UCB:
         self.optimizer = torch.optim.Adam(
             self.model.parameters(),
             lr = config["learning_rate"],
-            betas = [0.99, 0.999],
-            eps = 1e-4,
         )
 
         self.criterion = nn.MSELoss()
@@ -236,8 +232,6 @@ class LunarAgent_hybrid:
         self.optimizer = torch.optim.Adam(
             self.model.parameters(),
             lr = config["learning_rate"],
-            betas = [0.99, 0.999],
-            eps = 1e-4,
         )
 
         self.criterion = nn.MSELoss()
@@ -351,8 +345,6 @@ class LunarAgent_epsilon:
         self.optimizer = torch.optim.Adam(
             self.model.parameters(),
             lr = config["learning_rate"],
-            betas = [0.99, 0.999],
-            eps = 1e-4,
         )
 
         self.criterion = nn.MSELoss()

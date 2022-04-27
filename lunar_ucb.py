@@ -3,14 +3,14 @@ from Agents import LunarAgent_UCB
 from Environments import LunarEnvironment
 
 run_config = {
-    "num_episodes"       : 1000,
-    "batch_size"         : 8,
-    "memory_size"        : 50000,
+    "num_episodes"       : 1400,
+    "batch_size"         : 64,
+    "memory_size"        : int(1e5),
     "gamma"              : 0.99,
-    "learning_rate"      : 1e-4,
-    "tau"                : 0.01,
-    "replay_iterations"  : 5,
-    "tune"               : 1,
+    "learning_rate"      : 5e-4,
+    "tau"                : 1e-3,
+    "replay_iterations"  : 4,
+    "tune"               : 0,
     "sampling method"    : "My method"
 }
 

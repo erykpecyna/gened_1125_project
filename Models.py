@@ -6,9 +6,11 @@ class LunarQNetwork(nn.Module):
     def __init__(self):
         super(LunarQNetwork, self).__init__()
         self.fcn = nn.Sequential(
-            nn.Linear(in_features = 8, out_features = 20),
+            nn.Linear(in_features = 8, out_features = 64),
             nn.ReLU(),
-            nn.Linear(in_features = 20, out_features = 4)
+            nn.Linear(in_features = 64, out_features = 64),
+            nn.ReLU(),
+            nn.Linear(in_features = 64, out_features = 4)
         )
     
     def forward(self, x):
@@ -19,11 +21,13 @@ class LunarQNetwork_UCB(nn.Module):
     def __init__(self):
         super(LunarQNetwork_UCB, self).__init__()
         self.fcn = nn.Sequential(
-            nn.Linear(in_features = 8, out_features = 20),
+            nn.Linear(in_features = 8, out_features = 64),
+            nn.ReLU(),
+            nn.Linear(in_features = 64, out_features = 64),
             nn.ReLU(),
         )
-        self.mu = nn.Linear(in_features = 20, out_features = 4)
-        self.sigma = nn.Linear(in_features = 20, out_features = 4)
+        self.mu = nn.Linear(in_features = 64, out_features = 4)
+        self.sigma = nn.Linear(in_features = 64, out_features = 4)
     
     def forward(self, x):
         x = self.fcn(x)
@@ -41,6 +45,4 @@ class LunarQNetwork_UCB(nn.Module):
     def eval_actions(self, x):
         x = self.fcn(x)
         mu = self.mu(x)
-        sigma = self.sigma(x)
-        ucb = mu
-        return ucb.argmax(dim=1)
+        return mu.argmax(dim=1)
